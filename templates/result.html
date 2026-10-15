@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diabetes Screening Summary</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <a href="/" class="text-decoration-none mb-3 d-inline-block">&larr; Back to Dashboard</a>
+        <h2 class="fw-bold mb-4">Diabetes Screening Summary</h2>
+        
+        <div class="alert alert-success p-4 shadow-sm">
+            <h4 class="alert-heading fw-bold">Predicted Diabetes Risk Probability: {{ risk_score }}%</h4>
+            <p class="mb-0">Evaluated using Gradient Boosting Machine Learning Model.</p>
+        </div>
+
+        <!-- AI Nurse Summary -->
+        <div class="card shadow-sm p-4 mt-4">
+            <h4 class="mb-3">AI Nurse Summary & Insights</h4>
+            <div id="ai-context" class="border p-3 rounded bg-white mb-3" style="white-space: pre-line;">
+                {{ ai_summary }}
+            </div>
+        </div>
+
+        <!-- Interactive Healthcare Chatbot Panel -->
+        <div class="card shadow-sm p-4 mt-4">
+            <h4 class="mb-3">Ask Follow-up Questions</h4>
+            <p class="text-muted small">Have questions about your result or medical terms? Ask the AI nurse assistant below.</p>
+            
+            <div id="chat-box" class="border p-3 rounded bg-white mb-3" style="height: 200px; overflow-y: scroll;">
+                <div class="text-muted text-center italic">Chat session started. Ask your question below...</div>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="user-input" class="form-control" placeholder="e.g., What does an HbA1c level of 6.0 mean?">
+                <button class="btn btn-primary" type="button" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const inputField = document.getElementById('user-input');
+            const chatBox = document.getElementById('chat-box');
+            const userMessage = inputField.value.trim();
+            const aiContext = document.getElementById('ai-context').innerText;
+
+            if (!userMessage) return;
+
+            // Append User Message
+            chatBox.innerHTML += `<div class="mb-2"><strong>You:</strong> ${userMessage}</div>`;
+            inputField.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: userMessage, context: aiContext })
+                });
+                const data = await response.json();
+
+                // Append AI Response
+                chatBox.innerHTML += `<div class="mb-2 text-primary"><strong>AI Nurse:</strong> ${data.reply}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } catch (error) {
+                chatBox.innerHTML += `<div class="mb-2 text-danger"><strong>System:</strong> Failed to get response.</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diabetes Prediction System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <h1 class="fw-bold text-primary">Diabetes Prediction System</h1>
+        <p class="text-muted">Automated ML risk prediction with AI-assisted clinical summaries.</p>
+        
+        <!-- Metrics Cards -->
+        <div class="row my-4">
+            <div class="col-md-6">
+                <div class="card p-3 shadow-sm">
+                    <span class="text-muted">Total Patients Screened</span>
+                    <h3 class="text-primary fw-bold">{{ total_screened }}</h3>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-3 shadow-sm">
+                    <span class="text-muted">Average Risk Score</span>
+                    <h3 class="text-warning fw-bold">{{ avg_risk }}%</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Form -->
+        <div class="card shadow-sm p-4 mb-5">
+            <h4 class="mb-3">New Patient Screening</h4>
+            <form action="/predict" method="POST">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Gender</label>
+                        <select name="gender" class="form-select">
+                            <option value="Female">Female</option>
+                            <option value="Male">Male</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Age</label>
+                        <input type="number" step="any" name="age" class="form-control" placeholder="e.g. 45" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">BMI</label>
+                        <input type="number" step="any" name="bmi" class="form-control" placeholder="e.g. 25.4" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">HbA1c Level (%)</label>
+                        <input type="number" step="any" name="hba1c" class="form-control" placeholder="e.g. 5.7" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Blood Glucose Level (mg/dL)</label>
+                        <input type="number" step="any" name="glucose" class="form-control" placeholder="e.g. 110" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Smoking History</label>
+                        <select name="smoking" class="form-select">
+                            <option value="never">Never</option>
+                            <option value="current">Current</option>
+                            <option value="former">Former</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Hypertension</label>
+                        <select name="hypertension" class="form-select">
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Heart Disease</label>
+                        <select name="heart_disease" class="form-select">
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-4 w-100">Calculate Risk & Generate AI Summary</button>
+            </form>
+        </div>
+
+        <!-- Past Screenings History Table -->
+        <div class="card shadow-sm p-4">
+            <h4 class="mb-3">Recent Screening History</h4>
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Timestamp</th>
+                            <th>Age</th>
+                            <th>BMI</th>
+                            <th>HbA1c</th>
+                            <th>Glucose</th>
+                            <th>Risk Probability</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in history %}
+                        <tr>
+                            <td>{{ row[0] }}</td>
+                            <td>{{ row[1] }}</td>
+                            <td>{{ row[2] }}</td>
+                            <td>{{ row[3] }}</td>
+                            <td>{{ row[4] }}%</td>
+                            <td>{{ row[5] }} mg/dL</td>
+                            <td><span class="badge bg-info text-dark">{{ row[6] }}%</span></td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">No screening records found yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
